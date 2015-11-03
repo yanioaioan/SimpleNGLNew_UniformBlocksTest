@@ -7,7 +7,7 @@ layout (location = 2) in vec3 inNormal;
 layout (location = 1) in vec2 inUV;
 
 
-
+//std140 that is supposed to handle vec3s as vec4s hence mat3s as mat4s didn't work too!!
 layout (column_major, shared) uniform Matrices
 {
     mat4 model;
