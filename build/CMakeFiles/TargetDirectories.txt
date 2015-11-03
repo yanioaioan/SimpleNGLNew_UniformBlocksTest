@@ -1,0 +1,2 @@
+/home/yioannidis/NGLDemos/15-16/SimpleNGLNew/build/CMakeFiles/SimpleNGL_automoc.dir
+/home/yioannidis/NGLDemos/15-16/SimpleNGLNew/build/CMakeFiles/SimpleNGL.dir
