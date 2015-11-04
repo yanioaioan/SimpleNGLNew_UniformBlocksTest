@@ -8,12 +8,17 @@ layout (location = 1) in vec2 inUV;
 
 
 //std140 that is supposed to handle vec3s as vec4s hence mat3s as mat4s didn't work too!!
-layout (column_major, shared) uniform Matrices
+layout (std140) uniform myUniformblockoftransforms
 {
     mat4 model;
     mat4 modelview;
     mat4 modelviewProjection;
-    mat3 normalmatrixX;
+//    mat3 normalmatrixX;
+    mat4 normalmatrixX;
+//    float t;
+//    float t2;
+//    float t3;
+//    float t4;
 };
 
 
@@ -58,7 +63,7 @@ out vec3 vPosition;
 void main()
 {
 // calculate the fragments surface normal
-fragmentNormal = (normalmatrixX*inNormal);
+fragmentNormal = (mat3(normalmatrixX)*inNormal);
 
 
 if (Normalize == true)

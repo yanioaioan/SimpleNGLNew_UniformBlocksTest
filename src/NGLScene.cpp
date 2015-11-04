@@ -142,49 +142,73 @@ void NGLScene::loadMatricesToShader()
   //////////////////////////////
   /// \brief ubo
   ///
-  struct Matrices
+  struct transform
   {
-    ngl::Mat4 model;
-    ngl::Mat4 modelview;
-    ngl::Mat4 modelviewProjection;
-    ngl::Mat3 normalmatrixX;
-
-  } matrices;
-
-  matrices.model=M; matrices.modelview=MV; matrices.modelviewProjection=MVP;  matrices.normalmatrixX=normalMatrix;
-
-
-  GLuint uniformBlockIndexRed = glGetUniformBlockIndex(shader->getProgramID("Phong"), "Matrices");
-//  GLuint uniformBlockIndexGreen = glGetUniformBlockIndex(shader->getProgramID("Phong"), "Matrices");
-//  GLuint uniformBlockIndexBlue = glGetUniformBlockIndex(shaderBlue.Program, "Matrices");
-//  GLuint uniformBlockIndexYellow = glGetUniformBlockIndex(shaderYellow.Program, "Matrices");
-
-  glUniformBlockBinding(shader->getProgramID("Phong"), uniformBlockIndexRed, 0);
-//  glUniformBlockBinding(shader->getProgramID("Phong"), uniformBlockIndexGreen, 0);
-//  glUniformBlockBinding(shaderBlue.Program, uniformBlockIndexBlue, 0);
-//  glUniformBlockBinding(shaderYellow.Program, uniformBlockIndexYellow, 0);
-  GLuint uboMatrices;
-  glGenBuffers(1, &uboMatrices);
-
-  glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
-  glBufferData(GL_UNIFORM_BUFFER, 4 * sizeof(ngl::Mat4), NULL, GL_STATIC_DRAW);
-  glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-  glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, 4 * sizeof(ngl::Mat4));
+      ngl::Mat4 model;
+      ngl::Mat4 modelview;
+      ngl::Mat4 modelviewProjection;
+//      ngl::Mat3 normalmatrixX;
+      ngl::Mat4 normalmatrixX;
+//      float t;
+//      float t2;
+//      float t3;
+//      float t4;
 
 
-          glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
-          glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(ngl::Mat4), (void *) &matrices.model);
-          glBindBuffer(GL_UNIFORM_BUFFER, 0);
-          glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
-          glBufferSubData(GL_UNIFORM_BUFFER,  1*sizeof(ngl::Mat4), sizeof(ngl::Mat4), (void *) &matrices.modelview);
-          glBindBuffer(GL_UNIFORM_BUFFER, 0);
-          glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
-          glBufferSubData(GL_UNIFORM_BUFFER,  2*sizeof(ngl::Mat4), sizeof(ngl::Mat4), (void *) &matrices.modelviewProjection);
-          glBindBuffer(GL_UNIFORM_BUFFER, 0);
-          glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
-          glBufferSubData(GL_UNIFORM_BUFFER,  3*sizeof(ngl::Mat4), sizeof(ngl::Mat4), (void *) &matrices.normalmatrixX);
-          glBindBuffer(GL_UNIFORM_BUFFER, 0);
+  };
+
+//  matrices.model=M; matrices.modelview=MV; matrices.modelviewProjection=MVP;  matrices.normalmatrixX=normalMatrix;
+
+
+    transform t;
+    t.model=M;
+    t.modelview=MV;
+    t.modelviewProjection=MVP;
+    t.normalmatrixX=t.modelview;
+    t.normalmatrixX.inverse();
+    GLuint blockIndex = shader->getUniformBlockIndex("myUniformblockoftransforms");
+
+    // get size of uniform block
+    GLint uboSize;
+    glGetActiveUniformBlockiv( shader->getProgramID("Phong"),blockIndex,
+                      GL_UNIFORM_BLOCK_DATA_SIZE, &uboSize);
+
+    GLuint uboHandle;
+    glGenBuffers( 1, &uboHandle );
+    glBindBuffer( GL_UNIFORM_BUFFER, uboHandle );
+    glBufferData( GL_UNIFORM_BUFFER, sizeof(transform),t.model.openGL(),GL_DYNAMIC_DRAW );
+    glBindBufferBase( GL_UNIFORM_BUFFER, blockIndex, uboHandle );
+
+
+
+    //////////////
+//  GLuint uniformBlockIndexRed = glGetUniformBlockIndex(shader->getProgramID("Phong"), "Matrices");
+
+//  glUniformBlockBinding(shader->getProgramID("Phong"), uniformBlockIndexRed, 0);
+
+
+//  GLuint uboMatrices;
+//  glGenBuffers(1, &uboMatrices);
+
+//  glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+//  glBufferData(GL_UNIFORM_BUFFER, 4 * sizeof(ngl::Mat4), NULL, GL_STATIC_DRAW);
+//  glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+//  glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, 4 * sizeof(ngl::Mat4));
+
+
+//          glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+//          glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(ngl::Mat4), (void *) &matrices.model);
+//          glBindBuffer(GL_UNIFORM_BUFFER, 0);
+//          glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+//          glBufferSubData(GL_UNIFORM_BUFFER,  1*sizeof(ngl::Mat4), sizeof(ngl::Mat4), (void *) &matrices.modelview);
+//          glBindBuffer(GL_UNIFORM_BUFFER, 0);
+//          glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+//          glBufferSubData(GL_UNIFORM_BUFFER,  2*sizeof(ngl::Mat4), sizeof(ngl::Mat4), (void *) &matrices.modelviewProjection);
+//          glBindBuffer(GL_UNIFORM_BUFFER, 0);
+//          glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);                 //ngl::Mat3 didn't work either
+//          glBufferSubData(GL_UNIFORM_BUFFER,  3*sizeof(ngl::Mat4), sizeof(ngl::Mat4), (void *) &matrices.normalmatrixX);
+//          glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 
   /////////////////////////////
